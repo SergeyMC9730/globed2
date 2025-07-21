@@ -7,6 +7,9 @@ if ("${CMAKE_SYSTEM_NAME}" STREQUAL "iOS" OR IOS)
     set(GLOBED_IOS ON)
 endif()
 
+# allow exporting compile commands (good addition for ides using clangd)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 if (GLOBED_IOS)
     set(CMAKE_OSX_ARCHITECTURES "arm64")
 else()
