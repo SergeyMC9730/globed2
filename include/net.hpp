@@ -27,6 +27,10 @@ namespace globed::net {
         return _internal::request<bool>(_internal::Type::IsConnected);
     }
 
+    inline Result<bool> isConnectedToRoom() {
+        return _internal::request<bool>(_internal::Type::IsConnectedToRoom);
+    }
+
     inline Result<uint32_t> getServerTps() {
         return _internal::request<uint32_t>(_internal::Type::ServerTps);
     }

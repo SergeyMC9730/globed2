@@ -5,6 +5,7 @@
 #include <managers/admin.hpp>
 #include <managers/game_server.hpp>
 #include <managers/settings.hpp>
+#include <managers/room.hpp>
 #include <net/manager.hpp>
 #include <ui/game/player/complex_visual_player.hpp>
 #include <ui/game/player/remote_player.hpp>
@@ -251,6 +252,10 @@ $on_mod(Loaded) {
         return Ok(NetworkManager::get().reconnecting());
     });
 
+    listen<Type::IsConnectedToRoom, bool>([] {
+        return Ok(RoomManager::get().isInRoom());
+    });
+
     // Admin
 
     listen<Type::IsMod, bool>([] {
@@ -329,4 +334,3 @@ $on_mod(Loaded) {
         return Ok(Loader::get()->getLaunchFlag(flagStr));
     });
 }
-

@@ -30,6 +30,7 @@ enum class Type {
     Ping = 1202,
     IsStandalone = 1203,
     IsReconnecting = 1204,
+    IsConnectedToRoom = 1205,
     // Admin
     IsMod = 1301,
     IsAuthMod = 1302,
