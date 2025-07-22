@@ -18,6 +18,9 @@ namespace globed::net {
 
     // Returns whether a connection break happened and the client is currently trying to reconnect.
     Result<bool> isReconnecting();
+
+    // Returns whether the player is currently connected to a room
+    Result<bool> isConnectedToRoom();
 } // namespace globed::net
 
 // Implementation
