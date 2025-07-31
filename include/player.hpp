@@ -28,6 +28,10 @@ namespace globed::player {
     // Returns the amount of players online.
     // If the player is not connected to a server, returns an error.
     Result<size_t> playersOnline();
+
+    // Tries to ban player from joining the room.
+    // Only room owner can do this. Room owner cannot be banned.
+    Result<void> banPlayerFromRoom(PlayerObject* node);
 } // namespace globed::player
 
 // Implementation
@@ -64,5 +68,9 @@ namespace globed::player {
 
     inline Result<std::pair<PlayerObject*, PlayerObject*>> getPlayerObjectsForId(int accountId) {
         return _internal::request<std::pair<PlayerObject*, PlayerObject*>, int>(_internal::Type::PlayerObjectsForId, accountId);
+    }
+
+    inline Result<void> banPlayerFromRoom(PlayerObject* node) {
+        return _internal::request<void>(_internal::Type::BanPlayerFromRoom, node);
     }
 } // namespace globed::player

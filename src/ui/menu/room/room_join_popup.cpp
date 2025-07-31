@@ -78,6 +78,7 @@ bool RoomJoinPopup::setup() {
             std::string reason = "N/A";
             if (packet->wasInvalid) reason = "Room doesn't exist";
             if (packet->wasFull) reason = "Room is full";
+            if (packet->userBanned) reason = "Room owner banned player";
 
             ErrorQueues::get().error(fmt::format("Failed to join room: {}", reason));
         }

@@ -1,3 +1,6 @@
+#include "data/packets/client/room.hpp"
+#include "net.hpp"
+#include "player.hpp"
 #include <globed.hpp>
 
 #include <hooks/gjbasegamelayer.hpp>
@@ -223,6 +226,29 @@ $on_mod(Loaded) {
             pl->player1->getPlayerObject(),
             pl->player2->getPlayerObject()
         ));
+    });
+
+    listen<Type::BanPlayerFromRoom, void(PlayerObject*)>([](PlayerObject* node) -> Result<void> {
+        if (!globed::net::isConnectedToRoom().unwrapOr(false)) {
+            return Err("Not connected to a room");
+        }
+        if (!globed::player::isGlobedPlayer(node)) {
+            return Err("Requested player is not connected");
+        }
+
+        auto &roomMan = RoomManager::get();
+        if (!roomMan.isOwner()) {
+            return Err("Not an owner");
+        }
+
+        int accountId = globed::player::accountIdForPlayer(node).unwrapOr(-1);
+        if (accountId <= 0) {
+            return Err("Invalid account ID");
+        }
+
+        NetworkManager::get().send(BanPlayerFromRoomPacket::create(accountId));
+
+        return Ok();
     });
 
     // Networking

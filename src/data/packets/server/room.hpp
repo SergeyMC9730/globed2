@@ -30,9 +30,9 @@ class RoomJoinFailedPacket : public Packet {
 
     RoomJoinFailedPacket() {}
 
-    bool wasInvalid, wasProtected, wasFull;
+    bool wasInvalid, wasProtected, wasFull, userBanned;
 };
-GLOBED_SERIALIZABLE_STRUCT(RoomJoinFailedPacket, (wasInvalid, wasProtected, wasFull));
+GLOBED_SERIALIZABLE_STRUCT(RoomJoinFailedPacket, (wasInvalid, wasProtected, wasFull, userBanned));
 
 // 23003 - RoomPlayerListPacket
 class RoomPlayerListPacket : public Packet {

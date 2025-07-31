@@ -137,18 +137,20 @@ impl ClientThread {
         }
 
         // check if we are even able to join the room
-        let (was_invalid, was_protected, was_full) = self.game_server.state.room_manager.try_with_any(
+        let (was_invalid, was_protected, was_full, user_banned) = self.game_server.state.room_manager.try_with_any(
             packet.room_id,
             |room| {
                 if !room.verify_password(&packet.password) {
-                    (false, true, false)
+                    (false, true, false, false)
                 } else if room.is_full() {
-                    (false, false, true)
+                    (false, false, true, false)
+                } else if room.manager.read().disallowed_players.contains(&account_id) {
+                    (false, false, false, true)
                 } else {
-                    (false, false, false)
+                    (false, false, false, false)
                 }
             },
-            || (true, false, false),
+            || (true, false, false, false),
         );
 
         if was_invalid || was_protected || was_full {
@@ -157,6 +159,7 @@ impl ClientThread {
                     was_invalid,
                     was_protected,
                     was_full,
+                    user_banned,
                 })
                 .await;
         }
@@ -362,6 +365,43 @@ impl ClientThread {
 
         if has_player {
             self.game_server.broadcast_room_kicked(packet.player).await;
+        }
+
+        Ok(())
+    });
+
+    gs_handler!(self, handle_ban_room_player, BanRoomPlayerPacket, packet, {
+        let accountId = gs_needauth!(self);
+
+        if !self.is_in_room() {
+            return Ok(());
+        }
+
+        // check if the requested room is not global one
+        let is_private_room = self.room.lock().id != self.game_server.state.room_manager.get_global().id;
+
+        if !is_private_room {
+            return Ok(());
+        }
+
+        // check if owner requested this command
+        let is_owner = accountId == self.room.lock().owner.load(Ordering::Relaxed);
+
+        if !is_owner {
+            return Ok(());
+        }
+
+        // check if players tries to ban themself
+        if accountId == packet.player {
+            return Ok(());
+        }
+
+        // check if the player is in our room
+        let has_player = self.room.lock().has_player(packet.player);
+
+        if has_player {
+            self.game_server.broadcast_room_kicked(packet.player).await;
+            self.room.lock().manager.write().disallowed_players.push(packet.player);
         }
 
         Ok(())

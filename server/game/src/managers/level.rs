@@ -55,6 +55,7 @@ pub struct Level {
 pub struct LevelManager {
     pub players: IntMap<i32, LevelManagerPlayer>, // player id : associated data
     pub levels: IntMap<LevelId, Level>,           // level id : [player id]
+    pub disallowed_players: Vec<i32>              // banned players
 }
 
 impl LevelManager {

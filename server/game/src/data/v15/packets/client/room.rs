@@ -50,3 +50,9 @@ pub struct CloseRoomPacket {
 pub struct KickRoomPlayerPacket {
     pub player: i32,
 }
+
+#[derive(Packet, Decodable)]
+#[packet(id = 13009)]
+pub struct BanRoomPlayerPacket {
+    pub player: i32
+}

@@ -24,6 +24,7 @@ enum class Type {
     PlayersOnline = 1104,
     AllPlayerIds = 1105,
     PlayerObjectsForId = 1106,
+    BanPlayerFromRoom = 1107,
     // Networking
     IsConnected = 1200,
     ServerTps = 1201,

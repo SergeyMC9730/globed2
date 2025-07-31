@@ -20,6 +20,7 @@ pub struct RoomJoinFailedPacket {
     pub was_invalid: bool,
     pub was_protected: bool,
     pub was_full: bool,
+    pub user_banned: bool,
 }
 
 #[derive(Packet, Encodable, DynamicSize)]

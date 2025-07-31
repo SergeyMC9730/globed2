@@ -617,7 +617,7 @@ impl ClientThread {
             RequestRoomListPacket::PACKET_ID => self.handle_request_room_list(&mut data).await,
             CloseRoomPacket::PACKET_ID => self.handle_close_room(&mut data).await,
             KickRoomPlayerPacket::PACKET_ID => self.handle_kick_room_player(&mut data).await,
-
+            BanRoomPlayerPacket::PACKET_ID => self.handle_ban_room_player(&mut data).await,
             /* admin related */
             AdminAuthPacket::PACKET_ID => self.handle_admin_auth(&mut data).await,
             AdminSendNoticePacket::PACKET_ID => self.handle_admin_send_notice(&mut data).await,

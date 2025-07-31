@@ -90,3 +90,14 @@ class CloseRoomPacket : public Packet {
     uint32_t roomId;
 };
 GLOBED_SERIALIZABLE_STRUCT(CloseRoomPacket, (roomId));
+
+// 13009 - BanPlayerFromRoomPacket
+class BanPlayerFromRoomPacket : public Packet {
+    GLOBED_PACKET(13009, CloseRoomPacket, false, false)
+
+    BanPlayerFromRoomPacket() {}
+    BanPlayerFromRoomPacket(uint32_t accountId) : accountId(accountId) {}
+
+    uint32_t accountId;
+};
+GLOBED_SERIALIZABLE_STRUCT(BanPlayerFromRoomPacket, (accountId));

@@ -51,6 +51,7 @@ Room related
 * 13004 - UpdateRoomSettingsPacket - update the settings of a room
 * 13005 - RoomSendInvitePacket - send invite to a room
 * 13006 - RequestRoomListPacket - request a list of all public rooms
+* 13009 - BanPlayerFromRoomPacket - try to ban user from joining room
 
 Admin related
 

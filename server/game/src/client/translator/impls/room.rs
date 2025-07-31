@@ -9,3 +9,4 @@ impl Translatable for RoomSendInvitePacket {}
 impl Translatable for RequestRoomListPacket {}
 impl Translatable for CloseRoomPacket {}
 impl Translatable for KickRoomPlayerPacket {}
+impl Translatable for BanRoomPlayerPacket {}
