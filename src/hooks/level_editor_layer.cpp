@@ -4,6 +4,7 @@
 
 #include "gjbasegamelayer.hpp"
 #include "triggers/gjeffectmanager.hpp"
+#include "ui/game/userlist/userlist.hpp"
 #include <managers/settings.hpp>
 #include <managers/hook.hpp>
 #include <managers/popup.hpp>
@@ -50,6 +51,23 @@ bool GlobedLevelEditorLayer::init(GJGameLevel* level, bool p1) {
     globed::toggleEditorTriggerHooks(settings.globed.editorChanges);
 #endif
 
+    if (!gjbgl || !gjbgl->established()) return true;
+
+    EditorUI *eui = EditorUI::get();
+    if (eui) {
+        CCNode *settingsMenu = eui->getChildByIDRecursive("settings-menu");
+        if (settingsMenu) {
+            Build<CCSprite>::createSpriteName("icon-players.png"_spr)
+                .scale(0.9f)
+                .intoMenuItem([](auto) {
+                    GlobedUserListPopup::create()->show();
+                })
+                .id("btn-open-playerlist"_spr)
+                .parent(settingsMenu);
+
+            settingsMenu->updateLayout();
+        }
+    }
 
     return true;
 }
