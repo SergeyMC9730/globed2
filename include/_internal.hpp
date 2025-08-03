@@ -39,6 +39,7 @@ enum class Type {
     // Callbacks
     CbPlayerJoin = 1400,
     CbPlayerLeave = 1401,
+    CbPlayerDestroy = 1402,
     // Settings
     ActiveSlotPath = 1500,
     ActiveSlotContainer = 1501,

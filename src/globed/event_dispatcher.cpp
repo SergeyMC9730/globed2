@@ -1,3 +1,4 @@
+#include "callbacks.hpp"
 #include "data/packets/client/room.hpp"
 #include "net.hpp"
 #include "player.hpp"
@@ -329,6 +330,22 @@ $on_mod(Loaded) {
         }
 
         gjbgl->addPlayerLeaveCallback(std::move(fn));
+
+        return Ok();
+    });
+
+    listen<Type::CbPlayerDestroy, void(PlayerDestroyFn)>([](PlayerDestroyFn fn) -> Result<void> {
+        auto gjbgl = GlobedGJBGL::get();
+        if (!gjbgl) {
+            return Err(NOT_IN_LEVEL_MSG);
+        }
+
+        auto& fields = gjbgl->getFields();
+        if (!fields.globedReady) {
+            return Err(NOT_CONNECTED_MSG);
+        }
+
+        gjbgl->addPlayerDestroyCallback(std::move(fn));
 
         return Ok();
     });

@@ -1,4 +1,5 @@
 #pragma once
+#include "callbacks.hpp"
 #include <defs/geode.hpp>
 
 #include <Geode/modify/GJBaseGameLayer.hpp>
@@ -67,7 +68,8 @@ struct GLOBED_DLL GlobedGJBGL : geode::Modify<GlobedGJBGL, GJBaseGameLayer> {
 
         // api stuff
         std::vector<globed::callbacks::PlayerJoinFn> playerJoinCallbacks;
-        std::vector<globed::callbacks::PlayerJoinFn> playerLeaveCallbacks;
+        std::vector<globed::callbacks::PlayerLeaveFn> playerLeaveCallbacks;
+        std::vector<globed::callbacks::PlayerDestroyFn> playerDestroyCallbacks;
 
         // ui elements
         GlobedOverlay* overlay = nullptr;
@@ -225,6 +227,7 @@ struct GLOBED_DLL GlobedGJBGL : geode::Modify<GlobedGJBGL, GJBaseGameLayer> {
     void explodeRandomPlayer();
     void addPlayerJoinCallback(globed::callbacks::PlayerJoinFn fn);
     void addPlayerLeaveCallback(globed::callbacks::PlayerLeaveFn fn);
+    void addPlayerDestroyCallback(globed::callbacks::PlayerDestroyFn fn);
 
     void setPlayerVisibility(bool enabled);
 };

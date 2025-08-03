@@ -2,6 +2,7 @@
 
 #include <Geode/loader/Dispatch.hpp>
 
+#include "callbacks.hpp"
 #include "game_manager.hpp"
 #include "gjgamelevel.hpp"
 #include <audio/all.hpp>
@@ -1532,6 +1533,10 @@ void GlobedGJBGL::addPlayerJoinCallback(globed::callbacks::PlayerJoinFn fn) {
 
 void GlobedGJBGL::addPlayerLeaveCallback(globed::callbacks::PlayerLeaveFn fn) {
     this->getFields().playerLeaveCallbacks.push_back(std::move(fn));
+}
+
+void GlobedGJBGL::addPlayerDestroyCallback(globed::callbacks::PlayerDestroyFn fn) {
+    this->getFields().playerDestroyCallbacks.push_back(std::move(fn));
 }
 
 void GlobedGJBGL::setPlayerVisibility(bool enabled) {

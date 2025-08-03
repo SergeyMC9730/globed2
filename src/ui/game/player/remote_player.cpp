@@ -1,4 +1,5 @@
 #include "remote_player.hpp"
+#include "hooks/gjbasegamelayer.hpp"
 
 #include <managers/settings.hpp>
 
@@ -81,6 +82,19 @@ void RemotePlayer::updateData(
     lastVisualState = data;
 
     wasPracticing = data.isPracticing;
+
+    if (frameFlags.pendingDeath) {
+        // get current bgl
+        auto gjbgl = GlobedGJBGL::get();
+        if (gjbgl) {
+            // run destroy callbacks if possible
+            for (const auto& callback : gjbgl->getFields().playerDestroyCallbacks) {
+                if (callback) {
+                    callback(player1->getPlayerObject());
+                }
+            }
+        }
+    }
 
     // don't update any anims if the player is hidden
     if (isForciblyHidden || hide) return;

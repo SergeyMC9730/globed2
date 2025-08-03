@@ -1,5 +1,7 @@
 #include "user_cell.hpp"
 
+#include "data/packets/client/room.hpp"
+#include "managers/room.hpp"
 #include "userlist.hpp"
 #include "actions_popup.hpp"
 #include <audio/voice_playback_manager.hpp>
@@ -186,6 +188,7 @@ void GlobedUserCell::makeButtons() {
 
     auto& settings = GlobedSettings::get();
     auto pl = GlobedGJBGL::get();
+    auto& rm = RoomManager::get();
 
     bool notSelf = accountData.accountId != GJAccountManager::get()->m_accountID;
 
@@ -196,6 +199,7 @@ void GlobedUserCell::makeButtons() {
     bool createBtnHide = notSelf; // always created
     bool createBtnMute = notSelf; // always created
     bool createBtnAdmin = AdminManager::get().authorized();
+    bool createBtnBan = rm.isInRoom() && rm.isOwner();
 
     using UserCellButton = BaseGameplayModule::UserCellButton;
 
@@ -210,10 +214,10 @@ void GlobedUserCell::makeButtons() {
     bool createBtnTp = createBtnAdmin && notSelf;
     bool createVisualizer = settings.communication.voiceEnabled && notSelf;
 
-    size_t buttonCount = (size_t)createBtnHide + createBtnMute + createBtnAdmin + createBtnTp + customButtons.size();
+    size_t buttonCount = (size_t)createBtnHide + createBtnMute + createBtnAdmin + createBtnTp + createBtnBan + customButtons.size();
 
-    // if no visualizer, max button count is 4, otherwise 2
-    size_t maxButtonCount = createVisualizer ? 2 : 4;
+    // if no visualizer, max button count is 5, otherwise 2
+    size_t maxButtonCount = createVisualizer ? 2 : 5;
 
     // we create the settings button and popup if things arent gonna fit
     bool createSettingsPopup = buttonCount > maxButtonCount;
@@ -226,7 +230,7 @@ void GlobedUserCell::makeButtons() {
     // Creare various buttons
 
     // god i hate this
-    bool muteAndHideInCell = (!createVisualizer || buttonCount == 2);
+    bool muteAndHideInCell = (!createVisualizer || buttonCount == 3);
 
     bool isMuted = !pl->shouldLetMessageThrough(accountData.accountId);
     bool isHidden = notSelf ? pl->m_fields->players.at(accountData.accountId)->getForciblyHidden() : false;
@@ -295,13 +299,37 @@ void GlobedUserCell::makeButtons() {
     hideButton->m_offButton->m_scaleMultiplier = 1.2f;
     hideButton->toggle(!isHidden);
 
+    // Ban player button
+
+    CCMenuItemToggler *banButton = nullptr;
+    if (createBtnBan) {
+        auto* banSpr = CCSprite::createWithSpriteFrameName("icon-ban.png"_spr);
+        util::ui::rescaleToMatch(banSpr, muteAndHideInCell ? btnSize : btnSizeBig);
+
+        banButton = CCMenuItemExt::createToggler(
+            banSpr,
+            banSpr,
+            [accountId = accountData.accountId, this](CCMenuItemToggler* btn) {
+                NetworkManager::get().send(BanPlayerFromRoomPacket::create(accountId));
+                this->setVisible(false);
+            }
+        );
+
+        banButton->setID("ban-btn"_spr);
+        banButton->m_onButton->m_scaleMultiplier = 1.2f;
+        banButton->m_offButton->m_scaleMultiplier = 1.2f;
+        banButton->toggle(!isHidden);
+    }
+
     if (createSettingsPopup) {
         popupButtons->addObject(muteButton);
         popupButtons->addObject(hideButton);
+        if (banButton) popupButtons->addObject(banButton);
     } else {
         // if not creating a settings popup, slot them here
         mainButtons->addObject(muteButton);
         mainButtons->addObject(hideButton);
+        if (banButton) mainButtons->addObject(banButton);
     }
 
     // admin menu button

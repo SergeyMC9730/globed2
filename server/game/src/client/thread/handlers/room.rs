@@ -153,7 +153,7 @@ impl ClientThread {
             || (true, false, false, false),
         );
 
-        if was_invalid || was_protected || was_full {
+        if was_invalid || was_protected || was_full || user_banned {
             return self
                 .send_packet_static(&RoomJoinFailedPacket {
                     was_invalid,
@@ -374,6 +374,7 @@ impl ClientThread {
         let account_id = gs_needauth!(self);
 
         if !self.is_in_room() {
+            debug!("{account_id} cannot run ban operation: caller is not in the room");
             return Ok(());
         }
 
@@ -386,8 +387,14 @@ impl ClientThread {
             let has_player = room.has_player(packet.player);
 
             if !is_private_room || !is_owner || account_id == packet.player || !has_player {
+                debug!(
+                    "{account_id} cannot run ban operation: one of these flags failed: {} ; {} ; {} == {} ; {}",
+                    !is_private_room, !is_owner, account_id, packet.player, !has_player
+                );
                 return Ok(());
             }
+
+            debug!("{account_id} banned player {} from the room {}", packet.player, room.id);
 
             room.manager.write().disallowed_players.push(packet.player);
         }
